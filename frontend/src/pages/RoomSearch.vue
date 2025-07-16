@@ -11,32 +11,28 @@
       <div class="search-form-card">
         <form @submit.prevent="handleFormSubmit" class="search-form">
           <div class="search-row">
-            <!-- Hotel Name Search -->
             <div class="search-field search-field--destination">
               <label class="search-label">
                 <span class="search-icon"><i class="pi pi-map-marker"></i></span>
                 Where are you going?
               </label>
-              <input
-                type="text"
+              <SearchAutocomplete
                 v-model="searchParams.destination"
                 placeholder="Enter hotel name, city, or destination"
-                class="search-input"
+                input-class="search-input"
+                @suggestion-selected="handleSuggestionSelected"
               />
             </div>
 
-            <!-- Date Range Picker Component -->
             <DateRangePicker
               v-model:checkin="searchParams.checkin"
               v-model:checkout="searchParams.checkout"
             />
 
-            <!-- Guest Selector Component -->
             <GuestSelector
               v-model:guests="searchParams.guests"
             />
 
-            <!-- Search Button -->
             <div class="search-field search-field--button">
               <button type="submit" class="search-button" :disabled="loading || !searchParams.checkin || !searchParams.checkout">
                 <i class="pi pi-search"></i> Search
@@ -67,7 +63,6 @@
         </div>
         
         <div class="results-container" :class="{ 'results-container--loading': paginationLoading || (loading && searchResults.data && searchResults.data.length > 0) }">
-          <!-- Loading Overlay for pagination or new search with existing results -->
           <div v-if="paginationLoading || (loading && searchResults.data && searchResults.data.length > 0)" class="pagination-loading-overlay">
             <div class="pagination-loading-content">
               <div class="loading-spinner"></div>
@@ -103,7 +98,6 @@
             </div>
           </div>
 
-          <!-- Pagination -->
           <div class="pagination-wrapper">
             <Pagination 
               :pagination-data="searchResults" 
@@ -133,6 +127,7 @@ import {useBookingStore} from '../stores'
 import DateRangePicker from '../components/DateRangePicker.vue'
 import GuestSelector from '../components/GuestSelector.vue'
 import Pagination from '../components/Pagination.vue'
+import SearchAutocomplete from '../components/SearchAutocomplete.vue'
 import { useAuthStore } from '../stores'
 
 export default {
@@ -140,7 +135,8 @@ export default {
   components: {
     DateRangePicker,
     GuestSelector,
-    Pagination
+    Pagination,
+    SearchAutocomplete
   },
   setup() {
     const router = useRouter()
@@ -175,7 +171,11 @@ export default {
         searchParams.guests = bookingStore.searchParams.guests
         searchParams.destination = bookingStore.searchParams.destination
         
-        searchRooms()
+        if (bookingStore.hasValidSearchResults()) {
+          searchResults.value = bookingStore.searchResults
+        } else {
+          searchRooms()
+        }
       } else {
         const today = new Date()
         const tomorrow = new Date(today)
@@ -213,6 +213,7 @@ export default {
     }
 
     const handleFormSubmit = () => {
+      bookingStore.clearSearchResults()
       searchRooms(1, false)
     }
 
@@ -245,6 +246,8 @@ export default {
         
         const response = await bookingsAPI.searchRooms(apiParams)
         searchResults.value = response
+        
+        bookingStore.setSearchResults(response)
       } catch (err) {
         error.value = 'Failed to search rooms. Please try again.'
         console.error('Room search error:', err)
@@ -311,6 +314,12 @@ export default {
       error.value = ''
     }
 
+    const handleSuggestionSelected = (suggestion) => {
+      searchParams.destination = suggestion.name
+      bookingStore.clearSearchResults()
+      searchRooms(1, false)
+    }
+
     return {
       searchParams,
       loading,
@@ -323,7 +332,8 @@ export default {
       clearSearch,
       formatDateRange,
       formatGuestsSummary,
-      goToPage
+      goToPage,
+      handleSuggestionSelected
     }
   }
 }
@@ -420,19 +430,6 @@ export default {
 
 .search-icon {
   font-size: 14px;
-}
-
-.search-input {
-  border: none;
-  outline: none;
-  font-size: 14px;
-  color: #333;
-  background: transparent;
-  width: 100%;
-}
-
-.search-input::placeholder {
-  color: #999;
 }
 
 .search-button {

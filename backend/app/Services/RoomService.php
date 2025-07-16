@@ -30,7 +30,7 @@ class RoomService extends BaseService
             );
         } else {
             $query = $this->model->newQuery();
-            
+
             // Filter by guest capacity if no dates provided
             if (isset($filters['guest'])) {
                 $query->guest($filters['guest']);
@@ -89,5 +89,28 @@ class RoomService extends BaseService
     public function getAvailableRooms($checkin, $checkout, $guestCount = null)
     {
         return RoomAvailability::getAvailableRooms($checkin, $checkout, $guestCount)->get();
+    }
+
+    /**
+     * Get room name suggestions for autocomplete
+     */
+    public function getRoomSuggestions($query, $limit = 10)
+    {
+        if (empty($query)) {
+            return [];
+        }
+
+        return $this->model->where('title', 'like', "%{$query}%")
+            ->orWhere('description', 'like', "%{$query}%")
+            ->select('id', 'title', 'description')
+            ->limit($limit)
+            ->get()
+            ->map(function ($room) {
+                return [
+                    'id' => $room->id,
+                    'name' => $room->title,
+                    'description' => $room->description
+                ];
+            });
     }
 }

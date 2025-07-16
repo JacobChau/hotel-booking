@@ -1,6 +1,5 @@
 ﻿<template>
   <div class="contact-info">
-    <!-- Progress Indicator -->
     <div class="progress-bar">
       <div class="container">
         <div class="progress-steps">
@@ -61,7 +60,8 @@
                 id="email"
                 v-model="form.email"
                 required
-                class="form-input"
+                disabled
+                class="form-input form-input--disabled"
                 :class="{ 'error': errors.email }"
               />
               <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
@@ -115,13 +115,14 @@
 <script>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useBookingStore } from '../stores'
+import { useBookingStore, useAuthStore } from '../stores'
 
 export default {
   name: 'ContactInfo',
   setup() {
     const router = useRouter()
     const bookingStore = useBookingStore()
+    const authStore = useAuthStore()
 
     const loading = ref(false)
     const errors = ref({})
@@ -203,15 +204,29 @@ export default {
       }
     }
 
-    // Check if we have the required data, if not redirect to search
     onMounted(() => {
       if (!bookingStore.selectedRoom || !bookingStore.checkInDate || !bookingStore.checkOutDate) {
         router.push('/search')
+        return
+      }
+
+      authStore.initAuth()
+      if (authStore.user && authStore.user.email) {
+        form.email = authStore.user.email
+        if (authStore.user.name) {
+          form.firstName = authStore.user.name
+        }
+        if (authStore.user.title) {
+          form.title = authStore.user.title
+        }
+      } else {
+        router.push('/login')
       }
     })
 
     return {
       bookingStore,
+      authStore,
       loading,
       errors,
       form,
@@ -234,68 +249,6 @@ export default {
   background-color: #f5f7fa;
 }
 
-.progress-bar {
-  background: white;
-  border-bottom: 1px solid #e9ecef;
-  padding: 20px 0;
-}
-
-.progress-steps {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.step-number {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 16px;
-  background: #e9ecef;
-  color: #6c757d;
-}
-
-.step.completed .step-number {
-  background: #333;
-  color: white;
-}
-
-.step.active .step-number {
-  background: #333;
-  color: white;
-}
-
-.step span {
-  font-size: 12px;
-  font-weight: 600;
-  color: #6c757d;
-  text-align: center;
-}
-
-.step.active span {
-  color: #333;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
 .contact-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -304,7 +257,7 @@ export default {
 }
 
 .contact-form-section {
-  background: #e9ecef;
+  background: var(--gray-200);
   padding: 40px;
   border-radius: 8px;
 }
@@ -312,7 +265,7 @@ export default {
 .contact-form-section h2 {
   font-size: 24px;
   font-weight: 700;
-  color: #333;
+  color: var(--gray-900);
   margin: 0 0 32px 0;
 }
 
@@ -329,7 +282,7 @@ export default {
 
 .form-group label {
   font-weight: 600;
-  color: #333;
+  color: var(--gray-900);
   margin-bottom: 8px;
   font-size: 14px;
 }
@@ -353,6 +306,12 @@ export default {
   border-color: #ff6b6b;
 }
 
+.form-input--disabled {
+  background-color: #f8f9fa;
+  color: var(--gray-600);
+  cursor: not-allowed;
+}
+
 .error-message {
   color: #ff6b6b;
   font-size: 14px;
@@ -360,14 +319,14 @@ export default {
 }
 
 .form-actions {
-  margin-top: 16px;
+  margin-top: var(--spacing-2xl);
 }
 
 .proceed-btn {
   width: 100%;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 600;
+  padding: var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -381,33 +340,33 @@ export default {
 }
 
 .booking-dates {
-  background: #e9ecef;
+  background: var(--gray-200);
   padding: 24px;
   text-align: center;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--gray-200);
 }
 
 .date-info {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-xs);
 }
 
 .night-info {
   font-size: 14px;
-  color: #6c757d;
+  color: var(--gray-600);
   margin-bottom: 4px;
 }
 
 .guest-info {
   font-size: 14px;
-  color: #6c757d;
+  color: var(--gray-600);
 }
 
 .room-preview {
   padding: 24px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--gray-200);
 }
 
 .room-image {
@@ -419,9 +378,8 @@ export default {
 }
 
 .room-name {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
+  font-size: var(--font-size-lg);
+  color: var(--gray-900);
   margin: 0;
   text-transform: uppercase;
 }
@@ -434,29 +392,21 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  color: #6c757d;
-  font-size: 14px;
+  color: var(--gray-600);
+  font-size: var(--font-size-md);
 }
 
 .price-total {
   display: flex;
   justify-content: space-between;
   padding: 16px 0 0 0;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid var(--gray-200);
   margin-top: 8px;
   font-size: 16px;
-  color: #333;
+  color: var(--gray-900);
 }
 
 @media (max-width: 768px) {
-  .progress-steps {
-    gap: 20px;
-  }
-
-  .step span {
-    font-size: 10px;
-  }
-
   .contact-layout {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -469,20 +419,6 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .container {
-    padding: 0 16px;
-  }
-
-  .progress-steps {
-    gap: 16px;
-  }
-
-  .step-number {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-  }
-
   .contact-form-section {
     padding: 20px;
   }

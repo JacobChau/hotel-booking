@@ -28,7 +28,6 @@ body {
     }
 }
 
-/* Layout Components */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -43,7 +42,6 @@ body {
   max-width: 1400px;
 }
 
-/* Improved Button Styles */
 .button {
   display: inline-flex;
   align-items: center;
@@ -166,7 +164,6 @@ body {
   flex-wrap: wrap;
 }
 
-/* Improved Spacing */
 .mb-10 { margin-bottom: 10px; }
 .mb-20 { margin-bottom: 20px; }
 .mb-30 { margin-bottom: 30px; }
@@ -182,7 +179,6 @@ body {
 .p-30 { padding: 30px; }
 .p-40 { padding: 40px; }
 
-/* Typography */
 .text-center { text-align: center; }
 .text-left { text-align: left; }
 .text-right { text-align: right; }
@@ -203,7 +199,6 @@ body {
 .text-info { color: #17a2b8; }
 .text-muted { color: #6c757d; }
 
-/* Page Layout Components */
 .page {
   min-height: 100vh;
   display: flex;
@@ -235,7 +230,6 @@ body {
   padding: 0 20px;
 }
 
-/* Improved Card Components */
 .card {
   background: white;
   border: 1px solid #e9ecef;
@@ -272,7 +266,62 @@ body {
   background: #f8f9fa;
 }
 
-/* Improved Form Components */
+.progress-bar {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  padding: 20px 0;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-semibold);
+  font-size: 16px;
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.step.completed .step-number {
+  background: var(--gray-600);
+  color: white;
+}
+
+.step.active .step-number {
+  background: var(--hotel-blue);
+  color: var(--white);
+}
+
+.step span {
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+}
+
+.step.active span {
+  color: var(--hotel-blue);
+  font-weight: var(--font-weight-bold);
+}
+
 .form {
   background: white;
   padding: 32px;
@@ -398,7 +447,6 @@ body {
   color: rgb(239, 68, 68);
 }
 
-/* Loading States */
 .loading {
   display: flex;
   justify-content: center;
@@ -424,7 +472,6 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Modal Components */
 .modal {
   position: fixed;
   top: 0;
@@ -495,7 +542,6 @@ body {
   gap: 12px;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .container {
     padding: 0 16px;
@@ -527,11 +573,29 @@ body {
     padding: 14px 20px;
     font-size: 16px;
   }
+
+  .progress-steps {
+    gap: 20px;
+  }
+
+  .step span {
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 480px) {
   .container {
     padding: 0 12px;
+  }
+
+  .progress-steps {
+    gap: 16px;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
   }
 
   .form {

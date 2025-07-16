@@ -14,12 +14,25 @@ class BookingController extends Controller
         $this->bookingService = $bookingService;
     }
 
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $bookings = $this->bookingService->getUserBookings();
+        $params = [
+            'per_page' => $request->get('per_page', 5),
+            'page' => $request->get('page', 1),
+            'type' => $request->get('type', 'all')
+        ];
+        
+        $bookings = $this->bookingService->getUserBookings($params);
+        
         return response()->json([
             'success' => true,
-            'data' => $bookings
+            'data' => $bookings->items(),
+            'current_page' => $bookings->currentPage(),
+            'last_page' => $bookings->lastPage(),
+            'per_page' => $bookings->perPage(),
+            'total' => $bookings->total(),
+            'from' => $bookings->firstItem(),
+            'to' => $bookings->lastItem()
         ]);
     }
 

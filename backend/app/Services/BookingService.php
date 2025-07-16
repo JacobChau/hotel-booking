@@ -17,10 +17,29 @@ class BookingService extends BaseService
         parent::__construct($booking);
     }
 
-    public function getUserBookings(): \Illuminate\Database\Eloquent\Collection
+    public function getUserBookings($params = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $user = Auth::user();
-        return Booking::with('room')->where('user_id', $user->id)->orderByDesc('created_at')->get();
+        $perPage = $params['per_page'] ?? 5;
+        $page = $params['page'] ?? 1;
+        $type = $params['type'] ?? 'all'; // 'upcoming', 'past', 'all'
+        
+        $query = Booking::with('room')->where('user_id', $user->id);
+        
+        // Filter by booking type
+        if ($type === 'upcoming') {
+            $query->where('check_out', '>', now()->toDateString())
+                  ->where('status', '!=', 'cancelled');
+        } elseif ($type === 'past') {
+            $query->where(function($q) {
+                $q->where('check_out', '<=', now()->toDateString())
+                  ->orWhere('status', 'cancelled');
+            });
+        }
+        
+        $query->orderByDesc('created_at');
+        
+        return $query->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function createBooking(CreateBookingRequest $request): Booking

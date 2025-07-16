@@ -17,7 +17,6 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    // Initialize auth state from cookies
     initAuth() {
       const token = Cookies.get('auth_token')
       const user = Cookies.get('auth_user')
@@ -29,7 +28,6 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // Login action
     async login(credentials) {
       this.loading = true
       this.error = null
@@ -37,15 +35,13 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await authAPI.login(credentials)
         
-        // Handle successful login - backend returns { status, message, access_token, user }
         if (response.status && response.access_token) {
           this.user = response.user
           this.token = response.access_token
           this.isAuthenticated = true
           
-          // Store in secure HTTP-only cookies (if backend supports it) or regular cookies
-          Cookies.set('auth_token', response.access_token, { 
-            expires: 7, // 7 days
+          Cookies.set('auth_token', response.access_token, {
+            expires: 7,
             secure: window.location.protocol === 'https:',
             sameSite: 'strict'
           })
@@ -55,7 +51,6 @@ export const useAuthStore = defineStore('auth', {
             sameSite: 'strict'
           })
           
-          // Check for redirect path and return it
           const redirectPath = sessionStorage.getItem('redirectAfterLogin')
           if (redirectPath) {
             sessionStorage.removeItem('redirectAfterLogin')
@@ -72,7 +67,6 @@ export const useAuthStore = defineStore('auth', {
         this.user = null
         this.token = null
         
-        // Clear cookies
         Cookies.remove('auth_token')
         Cookies.remove('auth_user')
         
@@ -82,7 +76,6 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // Register action
     async register(userData) {
       this.loading = true
       this.error = null
@@ -90,9 +83,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await authAPI.register(userData)
         
-        // Registration successful - backend returns { status, message }
         if (response.status) {
-          // After successful registration, log the user in automatically
           return await this.login({
             email: userData.email,
             password: userData.password
@@ -108,9 +99,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // Logout action
     logout() {
-      // Clear state without calling API
       this.user = null
       this.isAuthenticated = false
       this.token = null

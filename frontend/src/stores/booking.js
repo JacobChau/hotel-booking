@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 
-// Helper functions for localStorage
 const loadFromStorage = (key, defaultValue) => {
   try {
     const stored = localStorage.getItem(`booking_${key}`)
@@ -31,6 +30,15 @@ export const useBookingStore = defineStore('booking', {
       checkout: null,
       guests: 2,
       destination: ''
+    }),
+    searchResults: loadFromStorage('searchResults', {
+      data: [],
+      current_page: 1,
+      last_page: 1,
+      per_page: 10,
+      total: 0,
+      from: 0,
+      to: 0
     }),
     contactInfo: loadFromStorage('contactInfo', {
       title: 'Mr.',
@@ -144,6 +152,28 @@ export const useBookingStore = defineStore('booking', {
       saveToStorage('searchParams', this.searchParams)
     },
 
+    setSearchResults(results) {
+      this.searchResults = results
+      saveToStorage('searchResults', results)
+    },
+
+    clearSearchResults() {
+      this.searchResults = {
+        data: [],
+        current_page: 1,
+        last_page: 1,
+        per_page: 10,
+        total: 0,
+        from: 0,
+        to: 0
+      }
+      saveToStorage('searchResults', this.searchResults)
+    },
+
+    hasValidSearchResults() {
+      return this.searchResults.data && this.searchResults.data.length > 0
+    },
+
     setContactInfo(info) {
       this.contactInfo = { ...this.contactInfo, ...info }
       saveToStorage('contactInfo', this.contactInfo)
@@ -197,13 +227,13 @@ export const useBookingStore = defineStore('booking', {
         phone: ''
       }
       
-      // Clear localStorage
       localStorage.removeItem('booking_currentStep')
       localStorage.removeItem('booking_selectedRoom')
       localStorage.removeItem('booking_checkInDate')
       localStorage.removeItem('booking_checkOutDate')
       localStorage.removeItem('booking_guestCount')
       localStorage.removeItem('booking_searchParams')
+      localStorage.removeItem('booking_searchResults')
       localStorage.removeItem('booking_contactInfo')
     }
   }

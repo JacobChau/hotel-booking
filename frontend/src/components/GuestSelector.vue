@@ -11,7 +11,6 @@
       </div>
     </div>
     
-    <!-- Guests Dropdown -->
     <div v-if="showDropdown" class="guests-dropdown" ref="guestDropdown">
       <div class="guest-row">
         <div class="guest-info">

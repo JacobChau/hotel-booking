@@ -10,7 +10,6 @@
       </div>
     </div>
     
-    <!-- Calendar Dropdown -->
     <div v-if="showPicker" class="calendar-dropdown" ref="calendarDropdown">
       <div class="calendar-header">
         <button type="button" @click="previousMonth" class="nav-btn">‹</button>
@@ -35,10 +34,7 @@
         </div>
       </div>
       
-      <div class="calendar-footer">
-        <button type="button" @click="clearDates" class="clear-btn">Clear</button>
-        <button type="button" @click="closePicker" class="done-btn">Done</button>
-      </div>
+
     </div>
   </div>
 </template>
@@ -70,6 +66,13 @@ export default {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
+    const formatDateString = (date) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+    
     const calendarDays = computed(() => {
       const year = currentMonth.value.getFullYear()
       const month = currentMonth.value.getMonth()
@@ -83,7 +86,7 @@ export default {
         const date = new Date(startDate)
         date.setDate(startDate.getDate() + i)
         
-        const dateStr = date.toISOString().split('T')[0]
+        const dateStr = formatDateString(date)
         const isCurrentMonth = date.getMonth() === month
         const isPastDate = date < today
         
@@ -107,14 +110,19 @@ export default {
       }
       
       if (props.checkin && !props.checkout) {
-        const checkinDate = new Date(props.checkin)
+        const [year, month, day] = props.checkin.split('-')
+        const checkinDate = new Date(year, month - 1, day)
         const checkinStr = checkinDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
         return `${checkinStr} — Select checkout`
       }
       
       if (props.checkin && props.checkout) {
-        const checkinDate = new Date(props.checkin)
-        const checkoutDate = new Date(props.checkout)
+        const [checkinYear, checkinMonth, checkinDay] = props.checkin.split('-')
+        const [checkoutYear, checkoutMonth, checkoutDay] = props.checkout.split('-')
+        
+        const checkinDate = new Date(checkinYear, checkinMonth - 1, checkinDay)
+        const checkoutDate = new Date(checkoutYear, checkoutMonth - 1, checkoutDay)
+        
         const nights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24))
         
         const checkinStr = checkinDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -153,7 +161,7 @@ export default {
         classes.push('day-cell--in-range')
       }
       
-      if (day.date === today.toISOString().split('T')[0]) {
+      if (day.date === formatDateString(today)) {
         classes.push('day-cell--today')
       }
       
@@ -191,25 +199,27 @@ export default {
         emit('update:checkout', '')
         selectingCheckin.value = false
       } else {
-        const checkinDate = new Date(props.checkin)
-        const selectedDate = new Date(day.date)
-        
-        if (selectedDate <= checkinDate) {
-          emit('update:checkin', day.date)
-          emit('update:checkout', '')
-          selectingCheckin.value = false
-        } else {
-          emit('update:checkout', day.date)
-          selectingCheckin.value = true
+          const [checkinYear, checkinMonth, checkinDay] = props.checkin.split('-')
+          const [selectedYear, selectedMonth, selectedDay] = day.date.split('-')
+          
+          const checkinDate = new Date(checkinYear, checkinMonth - 1, checkinDay)
+          const selectedDate = new Date(selectedYear, selectedMonth - 1, selectedDay)
+          
+          if (selectedDate <= checkinDate) {
+            emit('update:checkin', day.date)
+            emit('update:checkout', '')
+            selectingCheckin.value = false
+          } else {
+            emit('update:checkout', day.date)
+            selectingCheckin.value = true
+            setTimeout(() => {
+              closePicker()
+            }, 300)
+          }
         }
-      }
     }
     
-    const clearDates = () => {
-      emit('update:checkin', '')
-      emit('update:checkout', '')
-      selectingCheckin.value = true
-    }
+
     
     const handleClickOutside = (event) => {
       if (calendarDropdown.value && !calendarDropdown.value.contains(event.target) && !event.target.closest('.date-range-picker')) {
@@ -239,7 +249,7 @@ export default {
       previousMonth,
       nextMonth,
       selectDate,
-      clearDates
+      formatDateString
     }
   }
 }
@@ -330,7 +340,7 @@ export default {
 }
 
 .calendar-grid {
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .weekdays {
@@ -400,45 +410,6 @@ export default {
 .day-cell--today {
   font-weight: 600;
   border: 2px solid #0071c2;
-}
-
-.calendar-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 12px;
-}
-
-.clear-btn {
-  background: none;
-  border: none;
-  color: #0071c2;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 4px;
-  transition: background 0.2s ease;
-}
-
-.clear-btn:hover {
-  background: #f0f0f0;
-}
-
-.done-btn {
-  background: #0071c2;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.done-btn:hover {
-  background: #005999;
 }
 
 @media (max-width: 768px) {

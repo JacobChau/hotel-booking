@@ -168,16 +168,24 @@ export default {
   right: var(--spacing-lg);
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--gray-600);
   cursor: pointer;
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);
   transition: var(--transition-normal);
   z-index: 2;
+  font-size: var(--font-size-lg);
 }
 
 .password-toggle:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--primary-blue);
+  background: rgba(0, 113, 194, 0.1);
+}
+
+.password-toggle:focus {
+  outline: none;
+  color: var(--primary-blue);
+  background: rgba(0, 113, 194, 0.1);
 }
 
 </style> 

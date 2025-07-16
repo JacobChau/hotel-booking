@@ -11,6 +11,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 Route::get('/rooms/search', [RoomController::class, 'search'])->name('rooms.search');
+Route::get('/rooms/suggestions', [RoomController::class, 'suggestions'])->name('rooms.suggestions');
 Route::get('/rooms', [RoomController::class, 'index']);
 Route::get('/rooms/{id}', [RoomController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {

@@ -14,6 +14,14 @@
         :enter="{ opacity: 1, scale: 1 }"
         :transition="{ duration: 500, delay: 200, type: 'spring' }"
       >
+        <!-- Back Button - Show only when redirected from room selection -->
+        <div v-if="showBackButton" class="auth-header">
+          <button @click="goBackToRoomSearch" class="back-button">
+            <i class="pi pi-arrow-left"></i>
+            <span>{{ backButtonText }}</span>
+          </button>
+        </div>
+
         <div class="auth-tabs">
           <button
             v-for="tab in tabs"
@@ -294,9 +302,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useBookingStore } from '../stores/booking'
 import AuthForm from '../components/auth/AuthForm.vue'
 import AuthInput from '../components/auth/AuthInput.vue'
 import AuthButton from '../components/auth/AuthButton.vue'
@@ -313,6 +322,7 @@ export default {
   setup() {
     const router = useRouter()
     const authStore = useAuthStore()
+    const bookingStore = useBookingStore()
 
     const activeTab = ref('login')
     const loading = ref(false)
@@ -320,6 +330,15 @@ export default {
     const forgotPasswordEmail = ref('')
     const successMessage = ref('')
     const errors = ref({})
+    const showBackButton = ref(false)
+    
+    const backButtonText = computed(() => {
+      if (bookingStore.hasValidSearchResults()) {
+        const resultsCount = bookingStore.searchResults.total
+        return `Back to Results (${resultsCount} rooms)`
+      }
+      return 'Back to Room Search'
+    })
 
     const loginForm = reactive({
       email: '',
@@ -478,8 +497,26 @@ export default {
       }
     }
 
+    const goBackToRoomSearch = () => {
+      // Clear the redirect session storage
+      sessionStorage.removeItem('redirectAfterLogin')
+      
+      // Check if we have valid search results to restore
+      if (bookingStore.hasValidSearchResults()) {
+        // Navigate back to room search - results will be restored automatically
+        router.push('/search')
+      } else {
+        // No cached results, navigate to search page normally
+        router.push('/search')
+      }
+    }
+
     onMounted(() => {
       authStore.clearError()
+      
+      // Check if user was redirected from room selection
+      const redirectAfterLogin = sessionStorage.getItem('redirectAfterLogin')
+      showBackButton.value = redirectAfterLogin === '/contact-info'
     })
 
     return {
@@ -492,10 +529,13 @@ export default {
       loginForm,
       registerForm,
       tabs,
+      showBackButton,
+      backButtonText,
       switchTab,
       handleLogin,
       handleRegister,
-      handleForgotPassword
+      handleForgotPassword,
+      goBackToRoomSearch
     }
   }
 }
@@ -565,6 +605,37 @@ export default {
   border-radius: var(--radius-xl);
   padding: var(--spacing-2xl);
   box-shadow: var(--shadow-xl);
+}
+
+.auth-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: rgba(0, 113, 194, 0.1);
+  border: 1px solid rgba(0, 113, 194, 0.2);
+  color: var(--primary-blue);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+  background: rgba(0, 113, 194, 0.2);
+  border-color: rgba(0, 113, 194, 0.3);
+  color: var(--primary-blue-dark);
+  transform: translateX(-2px);
+}
+
+.back-button i {
+  font-size: var(--font-size-md);
 }
 
 /* Tab Navigation */

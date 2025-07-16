@@ -53,4 +53,17 @@ class RoomController extends Controller
             return response()->json(['error' => 'Room not found'], 404);
         }
     }
+
+    public function suggestions(Request $request)
+    {
+        $query = $request->get('query', '');
+        $limit = $request->get('limit', 10);
+        
+        $suggestions = $this->roomService->getRoomSuggestions($query, $limit);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $suggestions
+        ]);
+    }
 }
