@@ -25,7 +25,6 @@
 
     <div class="container">
       <div class="contact-layout">
-        <!-- Left Column - Contact Form -->
         <div class="contact-form-section">
           <h2>CONTACT INFORMATION</h2>
           
@@ -75,7 +74,6 @@
           </form>
         </div>
 
-        <!-- Right Column - Booking Summary -->
         <div class="booking-summary-section">
           <div class="booking-dates">
             <div class="date-info">
@@ -115,6 +113,7 @@
 <script>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
 import { useBookingStore, useAuthStore } from '../stores'
 
 export default {
@@ -138,6 +137,16 @@ export default {
       state: '',
       zipCode: '',
       specialRequests: ''
+    })
+
+    useHead({
+      title: 'Contact Information - Hotel Booking',
+      meta: [
+        {
+          name: 'description',
+          content: 'Enter your contact information to complete your hotel booking. Secure and fast reservation process.'
+        }
+      ]
     })
 
     const selectedRoom = computed(() => bookingStore.selectedRoom)

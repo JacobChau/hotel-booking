@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://hotel-booking-lemon-sigma.vercel.app/sitemap.xml
+
+# Disallow admin/auth-only pages from crawling
+Disallow: /dashboard
+Disallow: /contact-info
+Disallow: /confirmation
+
+# Allow important pages
+Allow: /search
+Allow: /login 

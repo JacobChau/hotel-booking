@@ -304,6 +304,7 @@
 <script>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
 import { useAuthStore } from '../stores/auth'
 import { useBookingStore } from '../stores/booking'
 import AuthForm from '../components/auth/AuthForm.vue'
@@ -331,6 +332,24 @@ export default {
     const successMessage = ref('')
     const errors = ref({})
     const showBackButton = ref(false)
+
+    const pageTitle = computed(() => {
+      return activeTab.value === 'login' ? 'Login - Hotel Booking' : 'Register - Hotel Booking'
+    })
+
+    useHead({
+      title: pageTitle,
+      meta: [
+        {
+          name: 'description',
+          content: computed(() => 
+            activeTab.value === 'login' 
+              ? 'Sign in to your hotel booking account to manage reservations and access exclusive deals.'
+              : 'Create your hotel booking account to start making reservations and enjoy personalized experiences.'
+          )
+        }
+      ]
+    })
     
     const backButtonText = computed(() => {
       if (bookingStore.hasValidSearchResults()) {
@@ -498,15 +517,11 @@ export default {
     }
 
     const goBackToRoomSearch = () => {
-      // Clear the redirect session storage
       sessionStorage.removeItem('redirectAfterLogin')
       
-      // Check if we have valid search results to restore
       if (bookingStore.hasValidSearchResults()) {
-        // Navigate back to room search - results will be restored automatically
         router.push('/search')
       } else {
-        // No cached results, navigate to search page normally
         router.push('/search')
       }
     }
@@ -514,7 +529,6 @@ export default {
     onMounted(() => {
       authStore.clearError()
       
-      // Check if user was redirected from room selection
       const redirectAfterLogin = sessionStorage.getItem('redirectAfterLogin')
       showBackButton.value = redirectAfterLogin === '/contact-info'
     })

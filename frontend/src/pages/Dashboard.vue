@@ -234,6 +234,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
 import { useAuthStore } from '../stores'
 import { bookingsAPI } from '../api/bookings'
 import Pagination from '../components/Pagination.vue'
@@ -262,6 +263,24 @@ export default {
       show: false,
       message: '',
       type: 'success'
+    })
+
+    const pageTitle = computed(() => {
+      return activeTab.value === 'upcoming' ? 'My Bookings - Hotel Booking' : 'Booking History - Hotel Booking'
+    })
+
+    useHead({
+      title: pageTitle,
+      meta: [
+        {
+          name: 'description',
+          content: computed(() => 
+            activeTab.value === 'upcoming' 
+              ? 'View and manage your upcoming hotel reservations. Check booking details, cancel or modify your stays.'
+              : 'Browse your booking history and past hotel stays. Review previous reservations and experiences.'
+          )
+        }
+      ]
     })
     
     const tabDataCache = ref({

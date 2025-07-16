@@ -120,8 +120,9 @@
 </template>
 
 <script>
-import {onMounted, reactive, ref} from 'vue'
+import {onMounted, reactive, ref, computed} from 'vue'
 import {useRouter} from 'vue-router'
+import { useHead } from '@unhead/vue'
 import {bookingsAPI} from '../api/bookings'
 import {useBookingStore} from '../stores'
 import DateRangePicker from '../components/DateRangePicker.vue'
@@ -162,6 +163,67 @@ export default {
       checkout: '',
       guests: 2,
       page: 1
+    })
+
+    const pageTitle = computed(() => {
+      if (searchResults.value.total > 0) {
+        return `${searchResults.value.total} Hotels Found - Hotel Booking`
+      }
+      return 'Search Hotels - Hotel Booking'
+    })
+
+    useHead({
+      title: pageTitle,
+      meta: [
+        {
+          name: 'description',
+          content: computed(() => 
+            searchResults.value.total > 0 
+              ? `Browse ${searchResults.value.total} available hotels and rooms. Find the perfect accommodation for your stay.`
+              : 'Search and compare thousands of hotels worldwide. Find the best deals and book your perfect stay.'
+          )
+        },
+        {
+          name: 'keywords',
+          content: 'hotel booking, accommodation, travel, rooms, reservations, hotels worldwide'
+        },
+        {
+          property: 'og:title',
+          content: pageTitle
+        },
+        {
+          property: 'og:description',
+          content: computed(() => 
+            searchResults.value.total > 0 
+              ? `Browse ${searchResults.value.total} available hotels and rooms. Find the perfect accommodation for your stay.`
+              : 'Search and compare thousands of hotels worldwide. Find the best deals and book your perfect stay.'
+          )
+        },
+        {
+          property: 'og:type',
+          content: 'website'
+        },
+        {
+          property: 'og:site_name',
+          content: 'Hotel Booking'
+        },
+        {
+          name: 'twitter:card',
+          content: 'summary_large_image'
+        },
+        {
+          name: 'twitter:title',
+          content: pageTitle
+        },
+        {
+          name: 'twitter:description',
+          content: computed(() => 
+            searchResults.value.total > 0 
+              ? `Browse ${searchResults.value.total} available hotels and rooms. Find the perfect accommodation for your stay.`
+              : 'Search and compare thousands of hotels worldwide. Find the best deals and book your perfect stay.'
+          )
+        }
+      ]
     })
 
     onMounted(() => {

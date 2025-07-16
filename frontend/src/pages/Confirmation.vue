@@ -130,6 +130,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
 import { useBookingStore } from '../stores'
 import { bookingsAPI } from '../api/bookings'
 
@@ -143,6 +144,16 @@ export default {
     const error = ref('')
     const bookingConfirmed = ref(false)
     const confirmationNumber = ref('')
+
+    useHead({
+      title: 'Booking Confirmation - Hotel Booking',
+      meta: [
+        {
+          name: 'description',
+          content: 'Confirm your hotel booking details and complete your reservation. Review dates, room selection, and total cost.'
+        }
+      ]
+    })
 
     const numberOfNights = computed(() => {
       if (!bookingStore.checkInDate || !bookingStore.checkOutDate) return 0

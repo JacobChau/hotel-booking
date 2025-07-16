@@ -25,6 +25,7 @@
 
 <script>
 import { onMounted } from 'vue'
+import { useHead } from '@unhead/vue'
 import Masthead from './components/Masthead.vue'
 import { useAuthStore } from './stores'
 
@@ -36,8 +37,56 @@ export default {
   setup() {
     const authStore = useAuthStore()
 
+    useHead({
+      titleTemplate: '%s | Hotel Booking',
+      meta: [
+        {
+          name: 'viewport',
+          content: 'width=device-width, initial-scale=1'
+        },
+        {
+          name: 'theme-color',
+          content: '#003580'
+        },
+        {
+          name: 'apple-mobile-web-app-capable',
+          content: 'yes'
+        },
+        {
+          name: 'apple-mobile-web-app-status-bar-style',
+          content: 'default'
+        },
+        {
+          property: 'og:site_name',
+          content: 'Hotel Booking'
+        },
+        {
+          property: 'og:type',
+          content: 'website'
+        },
+        {
+          name: 'twitter:card',
+          content: 'summary_large_image'
+        }
+      ],
+      link: [
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          href: '/favicon.svg'
+        },
+        {
+          rel: 'apple-touch-icon',
+          href: '/apple-touch-icon.png'
+        },
+        {
+          rel: 'manifest',
+          href: '/manifest.json'
+        }
+      ]
+    })
+
     onMounted(() => {
-      // Initialize auth state on app start
       authStore.initAuth()
     })
 
@@ -45,11 +94,9 @@ export default {
   },
   methods: {
     onEnter(el) {
-      // Add entering animation class
       el.classList.add('page-enter')
     },
     onLeave(el) {
-      // Add leaving animation class
       el.classList.add('page-leave')
     }
   }
@@ -57,7 +104,6 @@ export default {
 </script>
 
 <style>
-/* Global App Styles */
 #app {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -138,7 +184,6 @@ export default {
   }
 }
 
-/* Responsive typography */
 @media (max-width: 768px) {
   #app {
     font-size: 14px;

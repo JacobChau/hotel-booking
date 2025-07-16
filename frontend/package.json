@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:seo": "npm run generate-sitemap && npm run build"
   },
   "dependencies": {
+    "@unhead/vue": "^2.0.12",
     "@vueuse/core": "^13.5.0",
     "@vueuse/motion": "^3.0.3",
     "axios": "^1.10.0",
