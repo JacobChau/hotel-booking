@@ -1,18 +1,151 @@
-/vendor/
-node_modules/
-npm-debug.log
-yarn-error.log
+# --- GLOBAL ---
 
-# Laravel 4 specific
-bootstrap/compiled.php
-app/storage/
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
 
-# Laravel 5 & Lumen specific
-public/storage
-public/hot
-storage/*.key
-.env
-Homestead.yaml
-Homestead.json
-/.vagrant
-.phpunit.result.cache
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.bak
+*.tmp
+*.log
+
+# Node.js (frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/.output/
+frontend/.cache/
+frontend/.nuxt/
+frontend/.vercel/
+frontend/.next/
+frontend/.turbo/
+frontend/.vite/
+frontend/.eslintcache
+
+# Build artifacts
+frontend/build/
+frontend/coverage/
+frontend/.parcel-cache/
+frontend/.sass-cache/
+frontend/.storybook/
+frontend/storybook-static/
+
+# Local static assets
+frontend/public/static/
+frontend/public/uploads/
+frontend/public/assets/
+
+# VSCode settings (optional, if you want to ignore workspace settings)
+frontend/.vscode/
+
+# --- LARAVEL BACKEND ---
+
+# Composer dependencies
+backend/vendor/
+
+# Laravel environment files
+backend/.env
+backend/.env.*
+!.env.example
+
+# Laravel cache, logs, and storage
+backend/storage/
+!backend/storage/.gitignore
+backend/bootstrap/cache/
+!backend/bootstrap/cache/.gitignore
+
+# Laravel test results
+backend/phpunit.result.cache
+
+# Laravel IDE helper
+backend/_ide_helper.php
+backend/_ide_helper_models.php
+
+# Laravel Horizon
+backend/.horizon
+
+# Laravel Telescope
+backend/storage/telescope/
+
+# Laravel Nova
+backend/storage/nova/
+
+# Laravel Mix
+backend/public/hot
+backend/public/storage
+backend/public/mix-manifest.json
+backend/public/css/
+backend/public/js/
+
+# Database
+backend/database/*.sqlite
+backend/database/*.sqlite3
+backend/database/database.sqlite
+backend/database/database.sqlite3
+backend/database/dump.sql
+
+# Logs
+backend/storage/logs/
+backend/storage/debugbar/
+
+# Misc
+backend/.phpunit.result.cache
+backend/.phpunit.cache
+backend/.phpunit/
+backend/.phpunit.result.cache
+
+# --- DOCKER/DEPLOYMENT ---
+
+docker/.env
+docker/data/
+docker/logs/
+docker/tmp/
+
+# --- GENERAL ---
+
+# Ignore local images, screenshots, and temp files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.tiff
+*.ico
+*.psd
+*.ai
+*.sketch
+*.xcf
+*.svg
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.flv
+*.wmv
+*.mp3
+*.wav
+*.ogg
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# Ignore by default, but allow demo images
+!demo*.png
+
+# --- END ---
