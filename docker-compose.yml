@@ -35,6 +35,7 @@ services:
       - REDIS_PORT=6379
       - SANCTUM_STATEFUL_DOMAINS=localhost:3000
       - SESSION_DOMAIN=localhost
+      - SEED_DATABASE=true
     networks:
       - hotel-booking-network
     healthcheck:

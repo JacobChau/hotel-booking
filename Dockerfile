@@ -134,12 +134,17 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:your-local-key-here" ]; then\n\
   php artisan key:generate --force\n\
 fi\n\
 \n\
-# Run migrations and seeders for development\n\
+# Run migrations for development\n\
 echo "Running migrations..."\n\
 php artisan migrate --force\n\
 \n\
-echo "Running database seeders..."\n\
-php artisan db:seed --force\n\
+# Only run seeders if SEED_DATABASE environment variable is set to true\n\
+if [ "$SEED_DATABASE" = "true" ]; then\n\
+  echo "Running database seeders..."\n\
+  php artisan db:seed --force\n\
+else\n\
+  echo "Skipping database seeding (set SEED_DATABASE=true to enable)"\n\
+fi\n\
 \n\
 # Clear and cache config for development\n\
 echo "Setting up development environment..."\n\
@@ -268,12 +273,12 @@ else\n\
   echo "Running regular migrations..."\n\
   php artisan migrate --force\n\
   \n\
-  # Only run seeders if SKIP_SEEDING is not set to true\n\
-  if [ "$SKIP_SEEDING" != "true" ]; then\n\
+  # Only run seeders if SEED_DATABASE is set to true\n\
+  if [ "$SEED_DATABASE" = "true" ]; then\n\
     echo "Running database seeders..."\n\
     php artisan db:seed --force\n\
   else\n\
-    echo "Skipping database seeding"\n\
+    echo "Skipping database seeding (set SEED_DATABASE=true to enable)"\n\
   fi\n\
 fi\n\
 \n\

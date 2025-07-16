@@ -77,6 +77,7 @@ docker-compose up -d --build
 **Environment setup:**
 - Backend environment is configured in `docker-compose.yml`
 - Frontend automatically connects to backend at `http://localhost:8000`
+- Database seeding is enabled by default (`SEED_DATABASE=true`)
 
 ---
 
@@ -281,6 +282,26 @@ docker-compose logs backend
 docker-compose logs frontend
 
 # Reset database
+docker-compose exec backend php artisan migrate:fresh --seed
+```
+
+### Database Seeding Control
+
+**For Development (Docker Compose):**
+- Set `SEED_DATABASE=true` in docker-compose.yml to enable seeding on container start
+- Set `SEED_DATABASE=false` to skip seeding (useful after initial setup)
+
+**For Production (Render):**
+- Set `SEED_DATABASE=true` only for initial deployment
+- Set `RUN_FRESH_MIGRATION=true` for completely fresh database setup
+- Leave both unset for regular deployments (migrations only)
+
+**Manual seeding:**
+```bash
+# Run seeders manually
+docker-compose exec backend php artisan db:seed
+
+# Fresh database with seeding
 docker-compose exec backend php artisan migrate:fresh --seed
 ```
 
