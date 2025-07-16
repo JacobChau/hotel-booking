@@ -102,22 +102,23 @@ set -e\n\
 \n\
 echo "Starting Laravel development environment..."\n\
 \n\
-# Install/update composer dependencies\n\
-if [ -f "composer.json" ]; then\n\
-    echo "Installing composer dependencies..."\n\
-    composer install --no-interaction --prefer-dist\n\
-fi\n\
+# Create required directories first\n\
+mkdir -p /var/www/bootstrap/cache\n\
+mkdir -p /var/www/storage/logs\n\
+mkdir -p /var/www/storage/framework/sessions\n\
+mkdir -p /var/www/storage/framework/views\n\
+mkdir -p /var/www/storage/framework/cache\n\
 \n\
 # Set proper permissions\n\
 chown -R www-data:www-data /var/www\n\
 chmod -R 775 /var/www/storage\n\
 chmod -R 775 /var/www/bootstrap/cache\n\
 \n\
-# Create required directories\n\
-mkdir -p /var/www/storage/logs\n\
-mkdir -p /var/www/storage/framework/sessions\n\
-mkdir -p /var/www/storage/framework/views\n\
-mkdir -p /var/www/storage/framework/cache\n\
+# Install/update composer dependencies\n\
+if [ -f "composer.json" ]; then\n\
+    echo "Installing composer dependencies..."\n\
+    composer install --no-interaction --prefer-dist\n\
+fi\n\
 \n\
 # Wait for database to be ready\n\
 echo "Waiting for database connection..."\n\
@@ -167,6 +168,15 @@ FROM base as production
 
 # Copy the Laravel application files
 COPY backend/ ./
+
+# Create required directories before composer install
+RUN mkdir -p /var/www/bootstrap/cache \
+    && mkdir -p /var/www/storage/logs \
+    && mkdir -p /var/www/storage/framework/sessions \
+    && mkdir -p /var/www/storage/framework/views \
+    && mkdir -p /var/www/storage/framework/cache \
+    && chmod -R 775 /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage
 
 # Install Composer dependencies for production
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
@@ -227,12 +237,6 @@ stderr_logfile_maxbytes=0' > /etc/supervisor/conf.d/supervisord.conf
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage \
     && chmod -R 775 /var/www/bootstrap/cache
-
-# Create required directories
-RUN mkdir -p /var/www/storage/logs \
-    && mkdir -p /var/www/storage/framework/sessions \
-    && mkdir -p /var/www/storage/framework/views \
-    && mkdir -p /var/www/storage/framework/cache
 
 # Create startup script for production
 RUN echo '#!/bin/bash\n\
