@@ -19,14 +19,20 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-    ],
+    'allowed_origins' => env('APP_ENV') === 'production' 
+        ? array_filter([
+            env('FRONTEND_URL'), // Your Vercel URL in production
+        ])
+        : [
+            'http://localhost:3000',
+            'http://127.0.0.1:3000',
+            'http://localhost:5173',
+            'http://127.0.0.1:5173',
+        ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '/^https:\/\/.*\.vercel\.app$/', // Allow all Vercel deployment URLs
+    ],
 
     'allowed_headers' => ['*'],
 
