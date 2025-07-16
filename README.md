@@ -4,7 +4,7 @@ A full-stack hotel booking application with user authentication, room search, bo
 
 - **Backend:** Laravel (PHP) API
 - **Frontend:** Vue 3 + Vite
-- **Database:** MySQL
+- **Database:** PostgreSQL
 - **Deployment:** Frontend on Vercel, Backend on Render
 
 ---
@@ -49,13 +49,13 @@ hotel-booking/
 - **Docker & Docker Compose** (recommended for local development)
 - **Node.js 18+** and **npm** (for frontend development)
 - **PHP 8.2+** and **Composer** (for backend development)
-- **MySQL 8.0+** (if running without Docker)
+- **PostgreSQL 16+** (if running without Docker)
 
 ---
 
 ### Option 1: Docker Compose (Recommended)
 
-This will run both backend and frontend locally with MySQL database.
+This will run both backend and frontend locally with PostgreSQL database.
 
 ```bash
 # Clone the repository
@@ -72,7 +72,7 @@ docker-compose up -d --build
 **Access the application:**
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:8000/api
-- **Database:** MySQL on localhost:3306
+- **Database:** PostgreSQL on localhost:5432
 
 **Environment setup:**
 - Backend environment is configured in `docker-compose.yml`
@@ -97,11 +97,11 @@ composer install
 php artisan key:generate
 
 # Configure database in .env file
-# DB_CONNECTION=mysql
+# DB_CONNECTION=pgsql
 # DB_HOST=127.0.0.1
-# DB_PORT=3306
+# DB_PORT=5432
 # DB_DATABASE=hotel_booking
-# DB_USERNAME=root
+# DB_USERNAME=hotel_user
 # DB_PASSWORD=your_password
 
 # Run migrations and seed database
@@ -154,11 +154,11 @@ APP_URL=http://localhost:8000
 FRONTEND_URL=http://localhost:3000
 
 # Database
-DB_CONNECTION=mysql
+DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=5432
 DB_DATABASE=hotel_booking
-DB_USERNAME=root
+DB_USERNAME=hotel_user
 DB_PASSWORD=
 
 # CORS Configuration
@@ -209,7 +209,7 @@ password: password
 
 ```bash
 # Create database
-mysql -u root -p -e "CREATE DATABASE hotel_booking;"
+createdb -U hotel_user hotel_booking
 
 # Run migrations
 php artisan migrate
